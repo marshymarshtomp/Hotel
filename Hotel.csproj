@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<ModLoaderPath>E:\Pobrane\Nickel-1.16\Nickel</ModLoaderPath>
+	<Version>0.0.1</Version>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Nickel.ModBuildConfig" Version="2.0.2" />
+		<PackageReference Include="EnumByNameSourceGenerator" Version="1.1.2" PrivateAssets="all" ExcludeAssets="runtime">
+			<IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<ModFiles Include="i18n/**" />
+		<ModFiles Include="assets/**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Nowy folder\" />
+	</ItemGroup>
+
+</Project>

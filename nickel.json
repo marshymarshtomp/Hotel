@@ -1,0 +1,15 @@
+{
+  "UniqueName": "Sierra",
+  "Version": "{{ModVersion}}",
+  "Author": "Soggoru Waffle, Marshy",
+  "Description": "A trained assasin. Leans heavy on attacks, and makes use of autododge to avoid incoming fire at the last second.",
+  "RequiredApiVersion": "0.12.0",
+  "EntryPointAssembly": "Hotel.dll",
+  "IsLegacyMod": "false",
+  "Dependencies": [
+    {
+      "UniqueName": "Shockah.Kokoro",
+      "Version": "2.8.1"
+    }
+  ]
+}
