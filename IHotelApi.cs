@@ -9,4 +9,7 @@ namespace Hotel;
 
 internal interface IHotelApi
 {
+    IDeckEntry HotelDeck { get; }
+    IStatusEntry SilenceStatus { get; }
+    IStatusEntry ReflexStatus { get; }
 }

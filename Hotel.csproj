@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	<ModLoaderPath>E:\Pobrane\Nickel-1.16\Nickel</ModLoaderPath>
+	<ModLoaderPath>E:\Steam\steamapps\common\Cobalt Core\Nickel</ModLoaderPath>
 	<Version>0.0.1</Version>
   </PropertyGroup>
 
@@ -18,7 +18,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Nowy folder\" />
+	  <ModFiles Remove="assets\cards\FocusedFire.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="assets\cards\FocusedFire.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="assets\cards\FocusedFire.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="artifacts\" />
+	  <Folder Include="cards\special\" />
+	  <Folder Include="Nowy folder1\" />
 	</ItemGroup>
 
 </Project>

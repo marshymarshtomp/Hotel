@@ -6,6 +6,11 @@ using Nickel.Common;
 using System.Reflection;
 using Hotel.ExternalAPIs.Kokoro;
 using Hotel.ExternalAPIs;
+using Hotel.features;
+using Hotel.cards;
+using Hotel.cards.common;
+using Hotel.cards.uncommon;
+using Hotel.cards.rare;
 namespace Hotel;
 
 public sealed class ModEntry : SimpleMod
@@ -19,16 +24,35 @@ public sealed class ModEntry : SimpleMod
 
     internal readonly ApiImplementation Api;
 
-    internal readonly IDeckEntry SierraDeck;
+    internal readonly IDeckEntry HotelDeck;
 
     internal static readonly IReadOnlyList<Type> CommonCardTypes = [
-            
+        typeof(SureShotCard),
+        typeof(PrepareCard),
+        typeof(CombatProwessCard),
+        typeof(BattleFocusCard),
+        typeof(AllOutCard),
+        typeof(ImpulseCard),
+        typeof(FusilladeCard),
+        typeof(AssaultBatteryCard),
+        typeof(StunGunCard)
         ];
     internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
-            
+        typeof(AbsolutionCard),
+        typeof(AmbushCard),
+        typeof(CalmBeforeTheStormCard),
+        typeof(ForesightCard),
+        typeof(JetstreamCard),
+        typeof(PhaseCard),
+        typeof(PhaseCard),
+        typeof(RiptideCard)
         ];
     internal static readonly IReadOnlyList<Type> RareCardTypes = [
-            
+        typeof(FlankCard),
+        typeof(FocusedFireCard),
+        typeof(HypersenseCard),
+        typeof(PartingShotCard),
+        typeof(SneakCard)
         ];
     internal static readonly IEnumerable<Type> AllCardTypes =
         [
@@ -52,12 +76,13 @@ public sealed class ModEntry : SimpleMod
         [
             ..AllCardTypes,
             ..AllArtifactTypes,
-           
+            typeof(SilenceManager),
+            typeof(ReflexManager)
         ];
    
     public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
     {
-        var sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/char/sierra_character_neutral_0.png")).Sprite;
+        var sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/char/Hotel_Neutral_0.png")).Sprite;
         Instance = this;
         Harmony = helper.Utilities.Harmony;
         KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2!;
@@ -71,12 +96,12 @@ public sealed class ModEntry : SimpleMod
                 new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(AnyLocs)
             );
 
-        SierraDeck = helper.Content.Decks.RegisterDeck("Sierra", new()
+        HotelDeck = helper.Content.Decks.RegisterDeck("Hotel", new()
         {
-            Definition = new() { color = new("ffc860"), titleColor = Colors.black },
-            BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/char/sierra_card_panel.png")).Sprite,
+            Definition = new() { color = new("d2cdc1"), titleColor = Colors.black },
+            BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/cards/HotelCard.png")).Sprite,
             Name = AnyLocs.Bind(["character", "name"]).Localize,
-            DefaultCardArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/char/sierra_card_background.png")).Sprite
+            DefaultCardArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/cards/Default_Card.png")).Sprite
         });
 
         foreach (var type in RegisterableTypes)
@@ -84,14 +109,14 @@ public sealed class ModEntry : SimpleMod
             AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
         }
 
-        helper.Content.Characters.V2.RegisterPlayableCharacter("Sierra", new()
+        helper.Content.Characters.V2.RegisterPlayableCharacter("Hotel", new()
         {
-            Deck = SierraDeck.Deck,
+            Deck = HotelDeck.Deck,
             Description = AnyLocs.Bind(["character", "description"]).Localize,
-            BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/char/sierra_character_panel.png")).Sprite,
+            BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/char/HotelPanel.png")).Sprite,
             NeutralAnimation = new()
             {
-                CharacterType = SierraDeck.UniqueName,
+                CharacterType = HotelDeck.UniqueName,
                 LoopTag = "neutral",
                 Frames = [
                     sprite
@@ -99,9 +124,9 @@ public sealed class ModEntry : SimpleMod
             },
             MiniAnimation = new()
             {
-                CharacterType = SierraDeck.UniqueName,
+                CharacterType = HotelDeck.UniqueName,
                 LoopTag = "mini",
-                Frames = [helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/char/sierra_character_mini.png")).Sprite]
+                Frames = [helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/char/Mini_Hotel.png")).Sprite]
             },
             Starters = new()
             {
@@ -113,7 +138,7 @@ public sealed class ModEntry : SimpleMod
 
         helper.Content.Characters.V2.RegisterCharacterAnimation(new()
         {
-            CharacterType = SierraDeck.UniqueName,
+            CharacterType = HotelDeck.UniqueName,
             LoopTag = "gameover",
             Frames = [
                 sprite
@@ -122,25 +147,12 @@ public sealed class ModEntry : SimpleMod
 
         helper.Content.Characters.V2.RegisterCharacterAnimation(new()
         {
-            CharacterType = SierraDeck.UniqueName,
+            CharacterType = HotelDeck.UniqueName,
             LoopTag = "squint",
             Frames = [
             sprite
         ]
         });
-
-        helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>(
-            "TheJazMaster.MoreDifficulties",
-            new SemanticVersion(1, 3, 0),
-            api => api.RegisterAltStarters(
-                deck: SierraDeck.Deck,
-                starterDeck: new StarterDeck
-                {
-                    cards = [
-                        ]
-                }
-                )
-            );
     }
     public override object? GetApi(IModManifest reguestingMod) => new ApiImplementation();
 }

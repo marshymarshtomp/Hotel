@@ -1,0 +1,90 @@
+{
+  "character": {
+    "name": "Hotel",
+    "description": [
+      "<c=d2cdc1>HOTEL</c>",
+      "A trained assasin. Leans heavy on <c=keyword>attacks</c>, and makes use of <c=keyword>autododge</c> to avoid incoming fire at the last second."
+    ]
+  },
+  "status": {
+    "Silence": {
+      "name": "Silence",
+      "description": "All non-attack actions are negated. <c=downside>Decreases by 1 at end of turn.</c>"
+    },
+    "Reflex": {
+      "name": "Reflex",
+      "description": "Gain 1 <c=status>AUTODODGE RIGHT</c> at the start of your turn. <c=downside>Decreases by 1 each turn.</c>"
+    }
+  },
+  "card": {
+    "SureShot": {
+      "name": "Sure Shot"
+    },
+    "Prepare": {
+      "name": "Prepare"
+    },
+    "CombatProwess": {
+      "name": "Combat Prowess"
+    },
+    "BattleFocus": {
+      "name": "Battle Focus"
+    },
+    "AllOut": {
+      "name": "All-Out"
+    },
+    "Impulse": {
+      "name": "Impulse"
+    },
+    "Fusillade": {
+      "name": "Fusillade"
+    },
+    "AssaultBattery": {
+      "name": "Assault Battery"
+    },
+    "StunGun": {
+      "name": "Stun Gun"
+    },
+    "CalmBeforeTheStorm": {
+      "name": "Calm Before the Storm"
+    },
+    "Absolution": {
+      "name": "Absolution"
+    },
+    "Ambush": {
+      "name": "Ambush"
+    },
+    "Riptide": {
+      "name": "Riptide"
+    },
+    "Phase": {
+      "name": "Phase"
+    },
+    "Jetstream": {
+      "name": "Jetstream"
+    },
+    "Foresight": {
+      "name": "Foresight"
+    },
+    "Hypersense": {
+      "name": "Hypersense"
+    },
+    "Sneak": {
+      "name": "Sneak"
+    },
+    "PartingShot": {
+      "name": "Parting Shot"
+    },
+    "Flank": {
+      "name": "Flank"
+    },
+    "FocusedFire": {
+      "name": "Focused Fire",
+      "description": {
+        "A": "Attack for 0 damage. +1 for every card with an attack in hand.",
+        "B": "Attack for 1 damage. +1 for every card with an attack in hand.",
+        "None": "Attack for 0 damage. +1 for every card with an attack in hand."
+      }
+    }
+  }
+
+}

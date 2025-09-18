@@ -1,5 +1,5 @@
 {
-  "UniqueName": "Sierra",
+  "UniqueName": "Hotel",
   "Version": "{{ModVersion}}",
   "Author": "Soggoru Waffle, Marshy",
   "Description": "A trained assasin. Leans heavy on attacks, and makes use of autododge to avoid incoming fire at the last second.",
@@ -10,6 +10,10 @@
     {
       "UniqueName": "Shockah.Kokoro",
       "Version": "2.8.1"
+    },
+    {
+      "UniqueName": "Mezz.TwosCompany",
+      "Version":  "3.1.2"
     }
   ]
 }
