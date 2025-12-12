@@ -22,9 +22,12 @@ namespace Hotel.features;
 internal sealed class SilenceManager : IRegisterable
 {
     internal static IStatusEntry SilenceStatus { get; private set; } = null!;
+    private static ISpriteEntry InfinitePreventionCardArt = null!;
 
     public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
     {
+        InfinitePreventionCardArt = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(
+            ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/cards/Angery.png"));
         SilenceStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("Silence", new()
         {
             Definition = new()
@@ -46,6 +49,104 @@ internal sealed class SilenceManager : IRegisterable
             original:AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
             transpiler: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrainCardActions_Transpiler_AttackCheck)))
         );
+        ModEntry.Instance.Harmony.Patch(
+            original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetDataWithOverrides)),
+            postfix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetDataWithOverrides_Postfix)))
+        );
+        ModEntry.Instance.Harmony.Patch(
+            original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
+            postfix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetActionsOverridden_Postfix)))
+        );
+        ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnPlayerPlayCard),
+            (int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount) =>
+            {
+                
+                if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, ModEntry.Instance.Helper.Content.Cards.InfiniteCardTrait) && card.GetDataWithOverrides(state).cost == 0)
+                {
+                    if (state.ship.Get(SilenceStatus.Status) > 0)
+                    {
+                        if (ModEntry.Instance.Helper.ModData.TryGetModData<int>(card, "InfinitePreventionCount",
+                                out var number))
+                        {
+                            if (number+1 >= 5) 
+                            {
+                                ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, ModEntry.Instance.Helper.Content.Cards.UnplayableCardTrait, true, false);
+                                
+                            }
+
+                            if (number < 5)
+                            {
+                                ModEntry.Instance.Helper.ModData.SetModData<int>(card, "InfinitePreventionCount", number + 1);
+                            }
+                        }
+                        else
+                        {
+                            ModEntry.Instance.Helper.ModData.SetModData<int>(card, "InfinitePreventionCount", 1);
+                        }
+                    }
+                }
+            }, 0);
+        ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnTurnEnd),
+            (State state, Combat combat) =>
+            {
+                var cardList = combat.hand.Concat(state.deck).Concat(combat.discard).Concat(combat.exhausted).ToList();
+                foreach (Card card in cardList)
+                {
+                    if (ModEntry.Instance.Helper.ModData.TryGetModData<int>(card, "InfinitePreventionCount",
+                            out var number))
+                    {
+                        if (number >= 5)
+                        {
+                            ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, ModEntry.Instance.Helper.Content.Cards.UnplayableCardTrait, false, false);
+                            ModEntry.Instance.Helper.ModData.RemoveModData(card,  "InfinitePreventionCount");
+                        }
+                    }
+                }
+            }, 0);
+        ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnCombatEnd),
+            (State state) =>
+            {
+                var cardList = state.deck;
+                foreach (Card card in cardList)
+                {
+                    if (ModEntry.Instance.Helper.ModData.TryGetModData<int>(card, "InfinitePreventionCount",
+                            out var number))
+                    {
+                        if (number >= 5)
+                        {
+                            ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, ModEntry.Instance.Helper.Content.Cards.UnplayableCardTrait, false, false);
+                            ModEntry.Instance.Helper.ModData.RemoveModData(card,  "InfinitePreventionCount");
+                        }
+                    }
+                }
+            });
+    }
+
+    private static void Card_GetDataWithOverrides_Postfix(State state, Card __instance, ref CardData __result)
+    {
+        if (state.route is Combat c)
+        {
+            if (ModEntry.Instance.Helper.ModData.TryGetModData<int>(__instance, "InfinitePreventionCount",
+                    out var number))
+            {
+                if (number >= 5)
+                {
+                    __result.art = InfinitePreventionCardArt.Sprite;
+                }
+            }
+        }
+    }
+
+    private static void Card_GetActionsOverridden_Postfix(State s, Combat c, Card __instance, ref List<CardAction> __result)
+    {
+        if (ModEntry.Instance.Helper.ModData.TryGetModData<int>(__instance, "InfinitePreventionCount",
+                out var number))
+        {
+            if (number >= 5)
+            {
+                __result.Clear();
+            }
+        }
     }
     private static void AStatus_Begin_Postfix(G g, State s, Combat c, AStatus __instance)
     {
@@ -114,7 +215,7 @@ internal sealed class SilenceManager : IRegisterable
             return instructions;
         }
     }
-
+    
     private static void Combat_DrainCardActions_RemoveNonAttacks(Combat c, G g)
     {
         while (c.cardActions.Count > 0)
@@ -137,4 +238,5 @@ internal sealed class SilenceManager : IRegisterable
             else break;
         } 
     }
+    
 }

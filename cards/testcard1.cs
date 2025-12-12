@@ -31,25 +31,15 @@ internal sealed class SilenceTestCard : Card, IRegisterable
     public override CardData GetData(State state)
         => upgrade switch
         {
-            Upgrade.A => new() { },
-            Upgrade.B => new() { },
-            _ => new() { },
+            _ => new() { cost = 0, infinite = true},
         };
     public override List<CardAction> GetActions(State s, Combat c)
         => upgrade switch
         {
-            Upgrade.A => [
-
-            ],
-            Upgrade.B => [
-
-            ],
             _ => [
                 new AAttack()
                 {
                     damage = GetDmg(s, 0),
-                    status = SilenceManager.SilenceStatus.Status,
-                    statusAmount = 1
                 }
             ],
 

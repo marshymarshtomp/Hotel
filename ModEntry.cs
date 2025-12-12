@@ -37,7 +37,8 @@ public sealed class ModEntry : SimpleMod
         typeof(ImpulseCard),
         typeof(FusilladeCard),
         typeof(AssaultBatteryCard),
-        typeof(StunGunCard)
+        typeof(StunGunCard),
+        typeof(SilenceTestCard)
         ];
     internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
         typeof(AbsolutionCard),
@@ -152,7 +153,7 @@ public sealed class ModEntry : SimpleMod
             CharacterType = HotelDeck.UniqueName,
             LoopTag = "gameover",
             Frames = [
-                sprite
+                helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/char/Hotel_Ded_0.png")).Sprite
                 ]
         });
 
@@ -164,6 +165,21 @@ public sealed class ModEntry : SimpleMod
             sprite
         ]
         });
+        
+        helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>(
+            "TheJazMaster.MoreDifficulties",
+            new SemanticVersion(1, 3, 0),
+            api => api.RegisterAltStarters(
+                deck: HotelDeck.Deck,
+                starterDeck: new StarterDeck
+                {
+                    cards = [
+                        new BattleFocusCard(),
+                        new AllOutCard()
+                    ]
+                }
+            )
+        );
     }
     public override object? GetApi(IModManifest reguestingMod) => new ApiImplementation();
 }
