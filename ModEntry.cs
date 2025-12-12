@@ -37,8 +37,7 @@ public sealed class ModEntry : SimpleMod
         typeof(ImpulseCard),
         typeof(FusilladeCard),
         typeof(AssaultBatteryCard),
-        typeof(StunGunCard),
-        typeof(SilenceTestCard)
+        typeof(StunGunCard)
         ];
     internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
         typeof(AbsolutionCard),
