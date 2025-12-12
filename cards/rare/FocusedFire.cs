@@ -8,6 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Hotel.features;
 using Hotel;
+using Microsoft.Extensions.Logging;
+using HarmonyLib;
+using System.Net.WebSockets;
+using static System.Net.Mime.MediaTypeNames;
+using System.Collections;
+using System.Runtime.CompilerServices;
 
 namespace Hotel.cards.rare;
 
@@ -24,43 +30,77 @@ internal sealed class FocusedFireCard : Card, IRegisterable
                 rarity = Rarity.rare,
                 upgradesTo = [Upgrade.A, Upgrade.B]
             },
-            Name = ModEntry.Instance.AnyLocs.Bind(["card", "FocusedFire", "name"]).Localize
-            //Art = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/cards/FocusedFire.png")).Sprite
+            Name = ModEntry.Instance.AnyLocs.Bind(["card", "FocusedFire", "name"]).Localize,
+            Art = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/cards/FocusedFire.png")).Sprite,
+            
         });
+        ModEntry.Instance.Api.RegisterHook(new SilenceHook(), 0);
     }
-    public override CardData GetData(State state)
-        => upgrade switch
+
+    private sealed class SilenceHook : ISilenceHook
+    {
+        public bool? IsSilencable(State state, Combat combat, CardAction cardAction)
         {
-            Upgrade.A => new() { },
-            Upgrade.B => new() { },
-            _ => new() { },
+            if (cardAction is AFocusedFireAttack) return false;
+            return null;
+        }
+    }
+
+    public override CardData GetData(State state)
+    {
+        return new CardData
+        {
+            cost = 1,
+            description = $"Attack for {GetDmg(state, upgrade == Upgrade.B ? 1 : 0)} damage. + 1 for every card with an attack in hand.",
+            retain = upgrade == Upgrade.A ? true : false
         };
+    }
     public override List<CardAction> GetActions(State s, Combat c)
     {
-        var a = 0;
-        foreach (var card in c.hand)
-        {
-            if (card.GetActionsOverridden(s, c).Any(x => x is AAttack))
-            {
-                a++;
-            }
-        }
         return upgrade switch
         {
             Upgrade.A => [
-                new AAttack()
+                new AFocusedFireAttack()
                 {
-                    damage = GetDmg(s, 0+a)
+                    card = this
                 }
             ],
             Upgrade.B => [
-
+                new AFocusedFireAttack()
+                {
+                    card = this
+                }
             ],
             _ => [
-
+                new AFocusedFireAttack()
+                {
+                    card = this
+                }
             ],
-
         };
     }
-
+}
+public class AFocusedFireAttack : CardAction
+{
+    public Card card;
+    private int HandAttackCount(State s)
+    {
+        int damage = 0;
+        if (s.route is Combat c)
+        {
+            foreach (Card card in c.hand)
+            {
+                if (card.GetActionsOverridden(s, c).Any(a => a is AAttack)) damage++;
+            }
+        }
+        return damage;
+    }
+    public override void Begin(G g, State s, Combat c)
+    {
+        c.QueueImmediate(new AAttack()
+        {
+            damage = Card.GetActualDamage(s, HandAttackCount(s), false, card),
+            targetPlayer = false
+        });
+    }
 }

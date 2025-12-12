@@ -78,13 +78,41 @@
       "name": "Flank"
     },
     "FocusedFire": {
-      "name": "Focused Fire",
-      "description": {
-        "A": "Attack for 0 damage. +1 for every card with an attack in hand.",
-        "B": "Attack for 1 damage. +1 for every card with an attack in hand.",
-        "None": "Attack for 0 damage. +1 for every card with an attack in hand."
-      }
+      "name": "Focused Fire"
+    }
+  },
+  "artifact": {
+    "Megaphone": {
+      "name": "MEGAPHONE",
+      "description": "Prevent the first time you would gain <c=status>SILENCE</c> each turn."
+    },
+    "Spice": {
+      "name": "SPICE",
+      "description": "Lose 1 <c=status>AUTODODGE</c> at the start of each turn, instead of all of it."
+    },
+    "QuickDrive": {
+      "name": "QUIKR-TH4N-U DRIVE",
+      "description": "Gain 2 <c=status>REFLEX</c> on the first turn."
+    },
+    "Kunai": {
+      "name": "KUNAI",
+      "description": "While <c=status>SILENCED</c>, attacks deal +1 damage."
+    },
+    "SecretCompartment": {
+      "name": "SECRET COMPARTMENT",
+      "description": "Draw <c=card>+1 card</c> every 2 turns."
+    },
+    "Silencer": {
+      "name": "SILENCER",
+      "description": "Gain 1 extra <c=energy>ENERGY</c> every turn. <c=downside>Every turn, after playing 3 cards, gain 1 <c=status>SILENCE</c> if you have none</c>"
+    },
+    "Contract": {
+      "name": "CONTRACT",
+      "description": "Gain 1 extra <c=energy>ENERGY</c> every turn. <c=downside>Lose 2 <c=status>SHIELD</c> at the start of every turn.</c>"
+    },
+    "Stimulants": {
+      "name": "STIMULANTS",
+      "description": "All cards that cost 2+ energy cost 1 less energy. <c=downside>Gain 1 less <c=energy>ENERGY</c> every turn.</c>"
     }
   }
-
 }

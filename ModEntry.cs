@@ -4,6 +4,7 @@ using Nanoray.PluginManager;
 using Nickel;
 using Nickel.Common;
 using System.Reflection;
+using Hotel.artifacts;
 using Hotel.ExternalAPIs.Kokoro;
 using Hotel.ExternalAPIs;
 using Hotel.features;
@@ -21,6 +22,7 @@ public sealed class ModEntry : SimpleMod
     internal readonly IHarmony Harmony;
     internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocs;
     internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Locs;
+    internal readonly HookManager<ISilenceHook> HookManager;
 
     internal readonly ApiImplementation Api;
 
@@ -28,7 +30,7 @@ public sealed class ModEntry : SimpleMod
 
     internal static readonly IReadOnlyList<Type> CommonCardTypes = [
         typeof(SureShotCard),
-        typeof(PrepareCard),
+        typeof(PrepareHotelCard),
         typeof(CombatProwessCard),
         typeof(BattleFocusCard),
         typeof(AllOutCard),
@@ -62,10 +64,16 @@ public sealed class ModEntry : SimpleMod
         ];
 
     internal static readonly IReadOnlyList<Type> CommonArtifacts = [
-           
+           typeof(Megaphone),
+           typeof(QuickDrive),
+           typeof(Spice),
+           typeof(Kunai),
+           typeof(SecretCompartment)
         ];
     internal static readonly IReadOnlyList<Type> BossArtifacts = [
-           
+           typeof(Contract),
+           typeof(Silencer),
+           typeof(Stimulants)
         ];
     internal static readonly IEnumerable<Type> AllArtifactTypes = [
             .. CommonArtifacts,
@@ -77,7 +85,8 @@ public sealed class ModEntry : SimpleMod
             ..AllCardTypes,
             ..AllArtifactTypes,
             typeof(SilenceManager),
-            typeof(ReflexManager)
+            typeof(ReflexManager),
+            typeof(AFocusedFireAttack)
         ];
    
     public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
@@ -87,6 +96,7 @@ public sealed class ModEntry : SimpleMod
         Harmony = helper.Utilities.Harmony;
         KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2!;
         Api = new ApiImplementation();
+        HookManager = new(package.Manifest.UniqueName);
 
         AnyLocs = new JsonLocalizationProvider(
                 tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -131,7 +141,8 @@ public sealed class ModEntry : SimpleMod
             Starters = new()
             {
                 cards = [
-
+                    new SureShotCard(),
+                    new PrepareHotelCard()
                     ]
             }
         });

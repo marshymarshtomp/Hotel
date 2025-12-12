@@ -11,7 +11,7 @@ using Hotel;
 
 namespace Hotel.cards.common;
 
-internal sealed class PrepareCard : Card, IRegisterable
+internal sealed class PrepareHotelCard : Card, IRegisterable
 {
     public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
     {

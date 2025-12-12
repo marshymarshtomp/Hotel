@@ -7,9 +7,16 @@ using Nickel;
 
 namespace Hotel;
 
-internal interface IHotelApi
+public interface IHotelApi
 {
     IDeckEntry HotelDeck { get; }
     IStatusEntry SilenceStatus { get; }
     IStatusEntry ReflexStatus { get; }
+    void RegisterHook(ISilenceHook hook, double priority);
+    void UnregisterHook(ISilenceHook hook);
+}
+
+public interface ISilenceHook
+{
+    bool? IsSilencable(State state, Combat combat, CardAction cardAction);
 }

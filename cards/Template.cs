@@ -52,10 +52,6 @@ internal sealed class TemplateCard : Card, IRegisterable, IHasCustomCardTraits
 
             ],
             _ => [
-                new AStatus()
-                {
-                    status = ModEntry.Instance.Helper.
-                }
             ],
 
         };

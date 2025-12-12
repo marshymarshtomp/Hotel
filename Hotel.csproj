@@ -4,15 +4,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	<ModLoaderPath>E:\Steam\steamapps\common\Cobalt Core\Nickel</ModLoaderPath>
+	<ModLoaderPath>D:\Steam\steamapps\common\Cobalt Core\Nickel</ModLoaderPath>
 	<Version>0.0.1</Version>
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Nickel.ModBuildConfig" Version="2.0.2" />
-		<PackageReference Include="EnumByNameSourceGenerator" Version="1.1.2" PrivateAssets="all" ExcludeAssets="runtime">
-			<IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 		<ModFiles Include="i18n/**" />
 		<ModFiles Include="assets/**" />
 	</ItemGroup>
@@ -26,13 +22,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="assets\cards\FocusedFire.png" />
+	  <Content Include="assets\cards\FocusedFire.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="artifacts\" />
 	  <Folder Include="cards\special\" />
 	  <Folder Include="Nowy folder1\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="EnumByNameSourceGenerator" Version="1.1.2" />
+	  <PackageReference Include="Nickel.ModBuildConfig" Version="2.1.0" />
 	</ItemGroup>
 
 </Project>
