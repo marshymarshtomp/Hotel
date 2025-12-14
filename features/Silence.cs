@@ -221,22 +221,53 @@ internal sealed class SilenceManager : IRegisterable
         while (c.cardActions.Count > 0)
         {
             var card = ModEntry.Instance.KokoroApi.ActionInfo.GetSourceCard(g.state, c.currentCardAction);
-            if (c.currentCardAction is not AAttack && g.state.ship.Get(SilenceStatus.Status) > 0 &&
-                card is not null)
+            foreach (var wrappedAction in ModEntry.Instance.KokoroApi.WrappedActions.GetWrappedCardActionsRecursively(
+                         c.currentCardAction, false))
             {
-                var shouldDequeue = true;
-                foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(
-                             ModEntry.Instance.Helper.Utilities.ProxyManager, g.state.EnumerateAllArtifacts()))
+                if (wrappedAction is not AAttack && g.state.ship.Get(SilenceStatus.Status) > 0 &&
+                    card is not null)
                 {
-                    shouldDequeue = hook.IsSilencable(g.state, c, c.currentCardAction).HasValue
-                        ? hook.IsSilencable(g.state, c, c.currentCardAction).Value
-                        : true;
+                    var shouldDequeue = true;
+                    foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(
+                                 ModEntry.Instance.Helper.Utilities.ProxyManager, g.state.EnumerateAllArtifacts()))
+                    {
+                        shouldDequeue = hook.IsSilencable(g.state, c, wrappedAction).HasValue
+                            ? hook.IsSilencable(g.state, c, wrappedAction).Value
+                            : true;
+                    }
+
+                    if (!shouldDequeue) goto End;
+                    c.currentCardAction = c.cardActions.Dequeue();
                 }
-                if (!shouldDequeue) break;
-                c.currentCardAction = c.cardActions.Dequeue();
-            }
-            else break;
-        } 
+                else goto End;
+            } 
+            End:
+            break;
+        }
+
+        if (c.currentCardAction != null)
+        {
+            var card = ModEntry.Instance.KokoroApi.ActionInfo.GetSourceCard(g.state, c.currentCardAction);
+            foreach (var wrappedAction in ModEntry.Instance.KokoroApi.WrappedActions.GetWrappedCardActionsRecursively(
+                         c.currentCardAction, false))
+            {
+                if (wrappedAction is not AAttack && g.state.ship.Get(SilenceStatus.Status) > 0 &&
+                    card is not null)
+                {
+                    var shouldDequeue = true;
+                    foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(
+                                 ModEntry.Instance.Helper.Utilities.ProxyManager, g.state.EnumerateAllArtifacts()))
+                    {
+                        shouldDequeue = hook.IsSilencable(g.state, c, wrappedAction).HasValue
+                            ? hook.IsSilencable(g.state, c, wrappedAction).Value
+                            : true;
+                    }
+
+                    if (shouldDequeue) c.currentCardAction = c.cardActions.Dequeue();
+                }
+            } 
+
+        }
     }
     
 }

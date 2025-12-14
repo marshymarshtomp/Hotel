@@ -31,8 +31,8 @@ internal sealed class StunGunCard : Card, IRegisterable
     public override CardData GetData(State state)
         => upgrade switch
         {
-            Upgrade.A => new() { cost = 2 },
-            _ => new() { cost = 1 },
+            Upgrade.A => new() { cost = 1 },
+            _ => new() { cost = 2 },
         };
     public override List<CardAction> GetActions(State s, Combat c)
         => upgrade switch
