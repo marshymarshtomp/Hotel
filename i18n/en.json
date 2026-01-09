@@ -3,7 +3,7 @@
     "name": "Hotel",
     "description": [
       "<c=d2cdc1>HOTEL</c>",
-      "A trained assasin. Leans heavy on <c=keyword>attacks</c>, and makes use of <c=keyword>autododge</c> to avoid incoming fire at the last second."
+      "A trained assassin. Leans heavy on <c=keyword>attacks</c>, and makes use of <c=keyword>autododge</c> to avoid incoming fire at the last second."
     ]
   },
   "status": {
@@ -104,7 +104,7 @@
     },
     "Silencer": {
       "name": "SILENCER",
-      "description": "Gain 1 extra <c=energy>ENERGY</c> every turn. <c=downside>Every turn, after playing 3 cards, gain 1 <c=status>SILENCE</c> if you have none</c>"
+      "description": "Gain 1 extra <c=energy>ENERGY</c> every turn. <c=downside>Every turn, after playing 3 cards, gain 1 <c=status>SILENCE</c> if you have none.</c>"
     },
     "Contract": {
       "name": "CONTRACT",
@@ -112,7 +112,7 @@
     },
     "Stimulants": {
       "name": "STIMULANTS",
-      "description": "All cards that cost 2+ <c=energy>ENERGY cost 1 less <c=energy>ENERGY</c>. <c=downside>Gain 1 less <c=energy>ENERGY</c> every turn.</c>"
+      "description": "All cards that cost 2+ <c=energy>ENERGY</c> cost 1 less. <c=downside>Gain 1 less <c=energy>ENERGY</c> every turn.</c>"
     }
   }
 }

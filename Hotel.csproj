@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	<ModLoaderPath>D:\Steam\steamapps\common\Cobalt Core\Nickel</ModLoaderPath>
-	<Version>1.0.2</Version>
+	<Version>1.0.4</Version>
   </PropertyGroup>
 
 	<ItemGroup>
@@ -14,22 +14,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ModFiles Remove="assets\cards\FocusedFire.png" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Remove="assets\cards\FocusedFire.png" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Include="assets\cards\FocusedFire.png">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	</ItemGroup>
-
-	<ItemGroup>
 	  <Folder Include="cards\special\" />
-	  <Folder Include="Nowy folder1\" />
 	</ItemGroup>
 
 	<ItemGroup>

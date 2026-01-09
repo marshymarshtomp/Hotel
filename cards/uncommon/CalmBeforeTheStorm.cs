@@ -44,7 +44,7 @@ internal sealed class CalmBeforeTheStormCard : Card, IRegisterable
                 },
                 new ADrawCard()
                 {
-                    count = 5
+                    count = 2
                 },
                 new AStatus()
                 {

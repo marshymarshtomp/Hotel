@@ -54,9 +54,9 @@ internal sealed class SilenceManager : IRegisterable
             postfix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetDataWithOverrides_Postfix)))
         );
         ModEntry.Instance.Harmony.Patch(
-            original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
+            original:  AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
             postfix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetActionsOverridden_Postfix)))
-        );
+       );
         ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnPlayerPlayCard),
             (int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount) =>
             {
@@ -193,6 +193,12 @@ internal sealed class SilenceManager : IRegisterable
             return new SequenceBlockMatcher<CodeInstruction>(instructions)
                 .Find([
                     ILMatches.Ldarg(0),
+                    ILMatches.Instruction(OpCodes.Ldnull),
+                    ILMatches.Stfld("currentCardAction"),
+                    ILMatches.Br.GetBranchTarget(out var label)
+                ])
+                .Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.Before, [
+                    ILMatches.Ldarg(0),
                     ILMatches.Ldfld("cardActions"),
                     ILMatches.Call("Dequeue"),
                     ILMatches.Stfld("currentCardAction"),
@@ -203,11 +209,10 @@ internal sealed class SilenceManager : IRegisterable
                         new CodeInstruction(OpCodes.Ldarg_1),
                         new CodeInstruction(OpCodes.Call,
                             AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!,
-                                nameof(Combat_DrainCardActions_RemoveNonAttacks)))
+                                nameof(Combat_DrainCardActions_RemoveNonAttacks))),
+                        new CodeInstruction(OpCodes.Brtrue, label.Value)
                     ])
-                
                 .AllElements();
-                
         }
         catch (Exception ex)
         {
@@ -216,9 +221,45 @@ internal sealed class SilenceManager : IRegisterable
         }
     }
     
-    private static void Combat_DrainCardActions_RemoveNonAttacks(Combat c, G g)
+    private static bool Combat_DrainCardActions_RemoveNonAttacks(Combat c, G g)
     {
-        while (c.cardActions.Count > 0)
+        if (c.cardActions.Count > 0 || c.currentCardAction != null)
+            return AttackConditionCheck(c, g);
+        return false;
+    }
+    private static bool AttackConditionCheck(Combat c, G g)
+    {
+        var card = ModEntry.Instance.KokoroApi.ActionInfo.GetSourceCard(g.state, c.currentCardAction);
+        if (card is null) return false;
+        var shouldDequeue = false;
+        foreach (var wrappedAction in ModEntry.Instance.KokoroApi.WrappedActions.GetWrappedCardActionsRecursively(c.currentCardAction, false))
+        {
+            if (wrappedAction is AAttack || g.state.ship.Get(SilenceStatus.Status) <= 0) return false;
+            shouldDequeue = true;
+            foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(
+                         ModEntry.Instance.Helper.Utilities.ProxyManager, g.state.EnumerateAllArtifacts()))
+            {
+                shouldDequeue = hook.IsSilencable(g.state, c, wrappedAction).HasValue
+                    ? hook.IsSilencable(g.state, c, wrappedAction).Value
+                    : true;
+            }
+            if (shouldDequeue && c.cardActions.Count > 0 || shouldDequeue && c.cardActions.Count == 0 && c.currentCardAction != null) 
+            { 
+                c.currentCardAction = c.cardActions.Dequeue();
+            }
+        }
+        if (shouldDequeue && c.currentCardAction != null)
+        {
+            c.currentCardAction = null;
+            return true;
+        }
+        return false;
+    }
+    //below code is absolute dogshit, use it as an example of what NOT to do
+    
+    /*private static void Combat_DrainCardActions_RemoveNonAttacks(Combat c, G g)
+    {
+        while (c.cardActions.Count > 0 || c.currentCardAction != null)
         {
             var card = ModEntry.Instance.KokoroApi.ActionInfo.GetSourceCard(g.state, c.currentCardAction);
             foreach (var wrappedAction in ModEntry.Instance.KokoroApi.WrappedActions.GetWrappedCardActionsRecursively(
@@ -242,7 +283,8 @@ internal sealed class SilenceManager : IRegisterable
                 else goto End;
             } 
             End:
-            break;
+                if (c.currentCardAction != null) continue;
+                break;
         }
 
         if (c.currentCardAction != null)
@@ -262,12 +304,11 @@ internal sealed class SilenceManager : IRegisterable
                             ? hook.IsSilencable(g.state, c, wrappedAction).Value
                             : true;
                     }
-
                     if (shouldDequeue) c.currentCardAction = c.cardActions.Dequeue();
                 }
             } 
 
         }
-    }
-    
+    }*/
+
 }
