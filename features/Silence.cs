@@ -243,16 +243,18 @@ internal sealed class SilenceManager : IRegisterable
                     ? hook.IsSilencable(g.state, c, wrappedAction).Value
                     : true;
             }
+            if (shouldDequeue && c.currentCardAction != null && c.cardActions.Count == 0)
+            {
+                c.currentCardAction = null;
+                return true;
+            }
             if (shouldDequeue && c.cardActions.Count > 0) 
             { 
                 c.currentCardAction = c.cardActions.Dequeue();
             }
         }
-        if (shouldDequeue && c.currentCardAction != null)
-        {
-            c.currentCardAction = null;
-            return true;
-        }
+        
+
         return false;
     }
     //below code is absolute dogshit, use it as an example of what NOT to do
