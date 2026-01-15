@@ -243,7 +243,7 @@ internal sealed class SilenceManager : IRegisterable
                     ? hook.IsSilencable(g.state, c, wrappedAction).Value
                     : true;
             }
-            if (shouldDequeue && c.cardActions.Count > 0 || shouldDequeue && c.cardActions.Count == 0 && c.currentCardAction != null) 
+            if (shouldDequeue && c.cardActions.Count > 0) 
             { 
                 c.currentCardAction = c.cardActions.Dequeue();
             }
