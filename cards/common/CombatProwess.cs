@@ -25,15 +25,15 @@ internal sealed class CombatProwessCard : Card, IRegisterable
                 upgradesTo = [Upgrade.A, Upgrade.B]
             },
             Name = ModEntry.Instance.AnyLocs.Bind(["card", "CombatProwess", "name"]).Localize
-           
         });
     }
 
+    
 
     public override CardData GetData(State state)
         => upgrade switch
         {
-            _ => new() { cost = 2, floppable = true },
+            _ => new() { cost = 2, floppable = true, art = flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top },
         };
     public override List<CardAction> GetActions(State s, Combat c)
         => upgrade switch

@@ -226,7 +226,11 @@ internal sealed class SilenceManager : IRegisterable
                         : true;
                 }
 
-                if (shouldDequeue) c.cardActions.Remove(action);
+                if (shouldDequeue)
+                {
+                    c.cardActions.Remove(action);
+                    break;
+                }
             }
         }
         /*private static IEnumerable<CodeInstruction> Combat_DrainCardActions_Transpiler_AttackCheck(

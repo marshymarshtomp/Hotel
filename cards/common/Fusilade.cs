@@ -43,16 +43,19 @@ internal sealed class FusilladeCard : Card, IRegisterable
                 new AAttack()
                 {
                     damage = GetDmg(s, 1),
+                    fast = true
                 },
                 new AAttack()
                 {
                     damage = GetDmg(s, 1),
+                    fast = true
                 }
             ],
             _ => [
                 new AAttack()
                 {
                     damage = GetDmg(s, 1),
+                    fast = true
                 }
             ],
 
